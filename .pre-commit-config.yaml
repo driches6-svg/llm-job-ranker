@@ -1,8 +1,11 @@
-# .pre-commit-config.yaml
 repos:
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.90.0 # pick a tag
+    rev: v1.90.0
     hooks:
       - id: terraform_fmt
+        args: [--recursive]
+        files: ^terraform/.*\.tf$
       - id: terraform_validate
+        files: ^terraform/.*\.tf$
       - id: terraform_tflint
+        files: ^terraform/.*\.tf$

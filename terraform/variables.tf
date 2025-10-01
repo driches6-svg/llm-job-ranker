@@ -42,7 +42,7 @@ variable "ingest_image_uri" {
 variable "tags" {
   description = "Common resource tags"
   type        = map(string)
-  default     = {
+  default = {
     app         = "contract-role-ranker"
     environment = "dev"
     owner       = "dave"

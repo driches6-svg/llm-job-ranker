@@ -1,24 +1,48 @@
+# .github/workflows/terraform-lint.yml
 name: Terraform Lint
 
 on:
   push:
     paths:
-      - '**/*.tf'
+      - "terraform/**.tf"
+      - ".github/workflows/terraform-lint.yml"
   pull_request:
     paths:
-      - '**/*.tf'
+      - "terraform/**.tf"
+      - ".github/workflows/terraform-lint.yml"
 
 jobs:
   lint:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: terraform
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: hashicorp/setup-terraform@v3
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.9.5
-      - name: Terraform Format
+
+      # Install TFLint (correct action)
+      - name: Set up TFLint
+        uses: terraform-linters/setup-tflint@v4
+
+      - name: Terraform fmt (check)
         run: terraform fmt -check -recursive
-      - name: Terraform Validate
-        run: terraform validate
+
+      # Init without backend to avoid needing cloud creds just for validate
+      - name: Terraform init (no backend)
+        run: terraform init -backend=false
+
+      - name: Terraform validate
+        run: terraform validate -no-color
+
+      - name: TFLint init (download plugins)
+        run: tflint --init
+
       - name: TFLint
-        uses: terraform-linters/tflint-action@v0.51.0
+        run: tflint -f compact

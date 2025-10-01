@@ -4,8 +4,5 @@ repos:
     hooks:
       - id: terraform_fmt
         args: [--recursive]
-        files: ^terraform/.*\.tf$
       - id: terraform_validate
-        files: ^terraform/.*\.tf$
       - id: terraform_tflint
-        files: ^terraform/.*\.tf$

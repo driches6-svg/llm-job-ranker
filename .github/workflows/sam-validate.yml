@@ -25,4 +25,4 @@ jobs:
           pip install aws-sam-cli
 
       - name: Validate SAM template
-        run: sam validate --template-file lambda/template.yml
+        run: sam validate --template-file lambda/template.yml --region eu-west-2

@@ -27,7 +27,11 @@ resource "aws_s3_bucket_versioning" "jobs" {
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "jobs" {
   bucket = aws_s3_bucket.jobs.id
-  rule { apply_server_side_encryption_by_default { sse_algorithm = "AES256" } }
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
 }
 
 resource "aws_s3_bucket_public_access_block" "jobs" {
@@ -53,7 +57,10 @@ resource "aws_dynamodb_table" "dedup" {
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "job_id"
 
-  attribute { name = "job_id" type = "S" }
+  attribute {
+    name = "job_id"
+    type = "S"
+  }
 
   ttl {
     attribute_name = "ttl"
@@ -110,8 +117,8 @@ resource "aws_iam_role_policy_attachment" "ingest_s3_attach" {
 # DynamoDB dedup PutItem
 data "aws_iam_policy_document" "ingest_ddb" {
   statement {
-    sid     = "DDBPut"
-    actions = ["dynamodb:PutItem"]
+    sid       = "DDBPut"
+    actions   = ["dynamodb:PutItem"]
     resources = [aws_dynamodb_table.dedup.arn]
   }
 }
@@ -142,16 +149,16 @@ resource "aws_ecr_repository" "ingest" {
 # Optional lifecycle: keep last 10 images
 resource "aws_ecr_lifecycle_policy" "ingest" {
   repository = aws_ecr_repository.ingest.name
-  policy     = jsonencode({
+  policy = jsonencode({
     rules = [{
       rulePriority = 1,
       description  = "Keep last 10 images",
-      selection    = {
-        tagStatus     = "any",
-        countType     = "imageCountMoreThan",
-        countNumber   = 10
+      selection = {
+        tagStatus   = "any",
+        countType   = "imageCountMoreThan",
+        countNumber = 10
       },
-      action       = { type = "expire" }
+      action = { type = "expire" }
     }]
   })
 }
@@ -163,25 +170,26 @@ resource "aws_lambda_function" "ingest" {
   function_name = "${var.project}_ingest"
   role          = aws_iam_role.ingest_role.arn
 
-  package_type  = "Image"
-  image_uri     = var.ingest_image_uri != "" ? var.ingest_image_uri : "${aws_ecr_repository.ingest.repository_url}:placeholder"
+  package_type = "Image"
+  image_uri    = var.ingest_image_uri != "" ? var.ingest_image_uri : "${aws_ecr_repository.ingest.repository_url}:placeholder"
 
-  timeout     = 120
-  memory_size = 1024
+  timeout       = 120
+  memory_size   = 1024
   architectures = ["x86_64"]
 
   environment {
     variables = {
-      BUCKET          = aws_s3_bucket.jobs.bucket
-      APIIFY_URL      = var.apiify_url
-      DEDUP_TABLE     = aws_dynamodb_table.dedup.name
-      DEDUP_TTL_DAYS  = tostring(var.dedup_ttl_days)
+      BUCKET         = aws_s3_bucket.jobs.bucket
+      APIIFY_URL     = var.apiify_url
+      DEDUP_TABLE    = aws_dynamodb_table.dedup.name
+      DEDUP_TTL_DAYS = tostring(var.dedup_ttl_days)
       # Any other flags your handler expects, e.g. PARQUET_WRITE="1"
     }
   }
 
   tags = var.tags
 }
+
 
 # Permission for EventBridge to invoke the Lambda
 resource "aws_lambda_permission" "allow_events" {

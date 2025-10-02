@@ -1,0 +1,58 @@
+# ------------------------
+# Terraform
+# ------------------------
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
+
+# Lock file (reproducible provider versions) should be committed if you want reproducibility.
+# If you don't want to commit it, uncomment the line below.
+#.terraform.lock.hcl
+
+# ------------------------
+# Python (Lambda code)
+# ------------------------
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.eggs/
+*.egg
+dist/
+build/
+pip-wheel-metadata/
+.cache/
+.venv/
+venv/
+env/
+ENV/
+*.log
+
+# ------------------------
+# AWS Lambda packaging
+# ------------------------
+*.zip
+*.tar.gz
+
+# ------------------------
+# Docker
+# ------------------------
+*.tar
+*.img
+*.bak
+*.old
+.dockerignore
+.docker/
+
+# ------------------------
+# IDE / OS junk
+# ------------------------
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

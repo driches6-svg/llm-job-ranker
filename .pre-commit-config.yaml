@@ -5,3 +5,11 @@ repos:
       - id: terraform_fmt
       - id: terraform_validate
       - id: terraform_tflint
+
+  - repo: local
+    hooks:
+      - id: sam-validate
+        name: Run `sam validate` on template.yml
+        entry: sam validate --template-file lambda/template.yml
+        language: system
+        pass_filenames: false
